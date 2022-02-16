@@ -1,30 +1,27 @@
 <template>
-  <div class="checkbox">
+  <div v-for="item in items" class="checkbox">
     <label class="checkbox__box">
-      <input type="checkbox" v-model="checked" />
+      <input type="radio" v-model="picked" :value="item.name" @input="$emit('update:modelValue', $event.target.value)"/>
       <span></span>
     </label>
-    <div class="checkbox__title"><slot /></div>
+    <div class="checkbox__title">{{item.name}}</div>
   </div>
 </template>
 
 <script>
 export default {
   name: "VCheckbox",
+  data() {
+    return {
+      picked: ''
+    }
+  },
   props: {
-    value: Boolean,
+    items: {
+      type: Array
+    }
   },
-  emits:['input'],
-  computed: {
-    checked: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);  
-      },
-    },
-  },
+  emits:['update:modelValue'],
 };
 </script>
 

@@ -24,25 +24,19 @@
           v-model="phone"
         />
         <div class="selectGender">
-          <VCheckbox id="man" v-model="gender.man.isSelected" @input="onSelectGender(gender.man)"><p>{{gender.man.name}}</p></VCheckbox>
-          <VCheckbox id="woman" v-model="gender.woman.isSelected" @input="onSelectGender(gender.woman)"><p>{{gender.woman.name}}</p></VCheckbox>
+          <VRadioGroup :items="gender" v-model="selectGender"></VRadioGroup>
         </div>
       </div>
       <div>
         <h2>Информация о кандидате:</h2>
         <h3>Образование</h3>
-        <div v-for="(item, index) in educationList" :key="index">
-          <VCheckbox>{{item}}</VCheckbox>
-        </div>
+        <VRadioGroup :items="educationList" v-model="education"></VRadioGroup>
         <h3>Владение фреймворками</h3>
-        <div v-for="(framework, index) in frameworksList" :key="index">
-          <VCheckbox v-model="framework.isSelected" >{{framework}}</VCheckbox>
+        <div v-for="framework in frameworksList" :key="framework.id">
+          <VCheckbox :value="framework.isSelected" @input="onSelectFramework(framework)">{{framework.name}}</VCheckbox>
         </div>
-        <h3>СМС оповещения</h3>
-        <div class="sms">
-          <div><VCheckbox>Отправлять</VCheckbox></div>
-          <div class="not-send"><VCheckbox>Не отправлять</VCheckbox></div>
-        </div>
+        <h3>SMS оповещения</h3>
+        <VRadioGroup :items="sms" v-model="message"></VRadioGroup>
       </div>
       <div>
         <h2>Опыт работы</h2>
@@ -56,43 +50,123 @@
 <script>
 import VInput from '../components/VInput.vue';
 import VCheckbox from '../components/VCheckbox.vue';
+import VRadioGroup from '../components/VRadioGroup.vue';
 
 export default {
   components: {
     VInput,
-    VCheckbox
-  },
+    VCheckbox,
+    VRadioGroup
+},
   data(){
     return{
+      message: '',
+      education: '',
+      selectGender:'',
       lName: '',
       fName: '',
       email: '',
       phone: '',
-      educationList: ['Среднее', 'Средне-специальное', 'Неоконченное высшее', 'Бакалавр', 'Магистр', 'Аспирант'],
-      frameworksList: ['Vue', 'React', 'Angular', 'Svelte', 'Ember.js'],
-      gender: {
-        man: {
+      educationList: [
+        {
+          id: 0,
+          name: 'Среднее',
+          isSelected: false
+        },
+        {
+          id: 1,
+          name: 'Средне-специальное',
+          isSelected: false
+        },
+        {
+          id: 2,
+          name: 'Неоконченное высшее',
+          isSelected: false
+        },
+        {
+          id: 3,
+          name: 'Бакалавр',
+          isSelected: false
+        },
+        {
+          id: 4,
+          name: 'Магистр',
+          isSelected: false
+        },
+        {
+          id: 5,
+          name: 'Аспирант',
+          isSelected: false
+        }
+      ],
+      frameworksList: [
+        {
+          id: 0,
+          name: 'Vue',
+          isSelected: false
+        },
+        {
+          id: 1,
+          name: 'React',
+          isSelected: false
+        },
+        {
+          id: 2,
+          name: 'Angular',
+          isSelected: false
+        },
+        {
+          id: 3,
+          name: 'Svelte',
+          isSelected: false
+        },
+        {
+          id: 4,
+          name: 'Ember',
+          isSelected: false
+        }
+      ],
+      gender:[
+        {
           id: 0,
           name: "Мужской",
           isSelected: false,
         },
-        woman: {
+        {
           id: 1,
           name: "Женский",
           isSelected: false,
+        }
+      ],
+      sms:[
+        {
+          id: 0,
+          name: 'Отправлять',
+          isSelected: false
         },
-      },
+        {
+          id: 1,
+          name: 'Не отпралять',
+          isSelected: false
+        }
+      ]     
     }
   },
   methods:{
-    onSelectGender(value){
-      if(value.id === 0){
-        this.gender.man.isSelected = value.isSelected
-        this.gender.woman.isSelected = value.isSelected
-      } else if(value.id === 1){
-        this.gender.woman.isSelected = value.isSelected
-        this.gender.man.isSelected = value.isSelected
-      }
+    radioSelector(item){
+      console.log(item);
+      const educations = this.educationList.map((education) => {
+        if(education.id === item){
+          education.isSelected = true
+        } else education.isSelected = false
+      })
+      this.educationList = educations
+      console.log(this.educationList);
+    },
+    onSelectFramework(item){
+      this.frameworksList.forEach((el) => {
+        if(item.id === el.id){el.isSelected = !el.isSelected}
+      })
     },
     submit(){
       const data = {
@@ -119,10 +193,13 @@ export default {
         justify-content: flex-start;
         .selectGender{
           display: flex;
-          #woman{
-            margin-left: 16px;
-          }
+          justify-content: space-between;
+          margin-top: 16px;
         }
+      }
+      .education{
+        display: flex;
+        align-items: center;
       }
       .sms{
         display: flex;
